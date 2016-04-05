@@ -5,6 +5,7 @@ import java.util.ArrayList;
 //import java.util.Collections;
 //import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //Processing library
 import processing.core.PApplet;
@@ -85,9 +86,12 @@ public class EarthquakeCityMap extends PApplet {
 	    
 	    // Here is an example of how to use Processing's color method to generate 
 	    // an int that represents the color yellow.  
-	    int yellow = color(255, 255, 0);
 	    
 	    //TODO: Add code here as appropriate
+	    markers = earthquakes.stream().map(x->createMarker(x)).collect(Collectors.toCollection(ArrayList::new));
+	    for(Marker marker: markers) {
+	    	map.addMarkers(marker);
+	    }
 	}
 		
 	// A suggested helper method that takes in an earthquake feature and 
@@ -96,7 +100,25 @@ public class EarthquakeCityMap extends PApplet {
 	private SimplePointMarker createMarker(PointFeature feature)
 	{
 		// finish implementing and use this method, if it helps.
-		return new SimplePointMarker(feature.getLocation());
+		Object magObj = feature.getProperty("magnitude");
+    	float mag = Float.parseFloat(magObj.toString());
+	    int yellow = color(255, 255, 0);
+	    int blue = color(0, 0, 255);
+	    int red = color(255, 0, 0);
+    	SimplePointMarker rst = new SimplePointMarker(feature.getLocation());
+    	if (mag<=4) {
+    		rst.setColor(blue);
+    		rst.setRadius(8);
+    	}
+    	if (mag>4 && mag <5) {
+    		rst.setColor(yellow);
+    		rst.setRadius(16);
+    	}
+    	if (mag >= 5) {
+    		rst.setColor(red);
+    		rst.setRadius(32);
+    	}
+		return rst;
 	}
 	
 	public void draw() {

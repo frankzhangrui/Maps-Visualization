@@ -43,7 +43,7 @@ public class HelloWorld extends PApplet
 
 		// This sets the background color for the Applet.  
 		// Play around with these numbers and see what happens!
-		this.background(200, 200, 200);
+		this.background(0, 255, 0);
 		
 		// Select a map provider
 		AbstractMapProvider provider = new Google.GoogleTerrainProvider();
@@ -76,6 +76,16 @@ public class HelloWorld extends PApplet
 		
 		// TODO: Add code here that creates map2 
 		// Then you'll modify draw() below
+		
+		//create second map on the right
+		map2 = new UnfoldingMap(this, 450, 50, 350, 500, provider);
+		
+		//zoom in to 33.6550(latitude) and -84.3900(longitude)
+		map2.zoomAndPanTo(zoomLevel, new Location(33.7550f, -84.387314f));
+		
+		MapUtils.createDefaultEventDispatcher(this, map2);
+		
+		
 
 	}
 
@@ -84,6 +94,7 @@ public class HelloWorld extends PApplet
 		// So far we only draw map1...
 		// TODO: Add code so that both maps are displayed
 		map1.draw();
+		map2.draw();
 	}
 
 	

@@ -1,7 +1,13 @@
 package module4;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.Feature;
@@ -80,7 +86,7 @@ public class EarthquakeCityMap extends PApplet {
 		//earthquakesURL = "test2.atom";
 		
 		// WHEN TAKING THIS QUIZ: Uncomment the next line
-		//earthquakesURL = "quiz1.atom";
+		earthquakesURL = "quiz1.atom";
 		
 		
 		// (2) Reading in earthquake data and geometric properties
@@ -140,18 +146,22 @@ public class EarthquakeCityMap extends PApplet {
 		textAlign(LEFT, CENTER);
 		textSize(12);
 		text("Earthquake Key", 50, 75);
-		
+		int x = 50;
+		int y = 100;
 		fill(color(255, 0, 0));
+		triangle(x, y, x-5, y+10, x+5, y+10);
+		fill(color(255, 255, 255));
 		ellipse(50, 125, 15, 15);
-		fill(color(255, 255, 0));
-		ellipse(50, 175, 10, 10);
-		fill(color(0, 0, 255));
-		ellipse(50, 225, 5, 5);
+		fill(color(255, 255, 255));
+		rect(50, 175, 10, 10);
+		//fill(color(0, 0, 255));
+		//ellipse(50, 225, 5, 5);
 		
 		fill(0, 0, 0);
-		text("5.0+ Magnitude", 75, 125);
-		text("4.0+ Magnitude", 75, 175);
-		text("Below 4.0", 75, 225);
+		text("City Marker", 75, 100);
+		text("Land Quake", 75, 125);
+		text("Ocean Quake", 75, 175);
+		//text("Below 4.0", 75, 225);
 	}
 
 	
@@ -167,6 +177,11 @@ public class EarthquakeCityMap extends PApplet {
 		// TODO: Implement this method using the helper method isInCountry
 		
 		// not inside any country
+		for( Marker country: countryMarkers) {
+			if (isInCountry(earthquake, country)) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -179,6 +194,30 @@ public class EarthquakeCityMap extends PApplet {
 	private void printQuakes() 
 	{
 		// TODO: Implement this method
+		Map<String, Integer> rst = new HashMap<>();
+		Set<Marker> quakeSet = new HashSet<>(quakeMarkers);
+		int numOceanQuake = 0;
+		for(Marker country : countryMarkers) {
+			// remove visited earthquake
+			Set<Marker> toRemove = new HashSet<>();
+			for(Marker earthquake: quakeSet) {
+				// check if is on land then landQuakeMarker and then check if location is the same
+				if(((EarthquakeMarker) earthquake).isOnLand()) {
+					String nameCountry = (String) country.getProperty("name");
+					String location = ((LandQuakeMarker) earthquake).getCountry();
+	
+					if(nameCountry.equals(location)) {
+						rst.put(location, rst.getOrDefault(location,0) + 1);
+						toRemove.add(earthquake);
+					}
+				}
+			}
+			quakeSet.removeAll(toRemove);
+		}
+		numOceanQuake = quakeMarkers.size() - rst.values().stream().reduce(0, (x,y) -> x+y);
+		rst.forEach((k,v) -> System.out.println((String)k + " " + (int) v));
+		System.out.println("There are " + numOceanQuake + " quakes in the ocean");
+		
 	}
 	
 	
